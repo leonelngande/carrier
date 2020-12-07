@@ -70,14 +70,52 @@
             }
         </style>
 
-
-        @livewireStyles
     </head>
     <body>
         <div>
-            <livewire:carrier-finder />
+            <div class="search__container">
+                <input class="search__input" type="text" placeholder="Phone number" onkeypress="getCarrier(event)">
+
+                <p class="search__title">
+                    <span id="carrier"></span>
+
+                    <span id="message"></span>
+                </p>
+            </div>
+
+            <script>
+                const carrierContainer = document.getElementById('carrier');
+                const messageContainer = document.getElementById('message');
+
+                function getCarrier(e) {
+                    if(e.keyCode === 13){ // If Enter key was pressed
+                        e.preventDefault(); // Ensure it is only this code that runs
+
+                        fetch(`/carrier/${e.target.value}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data) {
+                                    if (!data.message) {
+                                        messageContainer.hidden = true;
+                                    }
+                                    if (!data.carrier) {
+                                        carrierContainer.hidden = true;
+                                    }
+                                    if (data.carrier) {
+                                        carrierContainer.hidden = false;
+                                        carrierContainer.innerText = data.carrier;
+                                    }
+                                    if (data.message) {
+                                        messageContainer.hidden = false;
+                                        messageContainer.innerText = data.message;
+                                    }
+                                }
+                            })
+                            .catch(err => console.log(err));
+                    }
+                }
+            </script>
         </div>
 
-        @livewireScripts
     </body>
 </html>
